@@ -21,8 +21,8 @@ using namespace std;
 
 struct Punto
 {
-  friend istream & operator>>(istream &i,Punto &p);
-  friend ostream & operator<<(ostream &, Punto &);
+  friend istream & operator>>(istream &i,const Punto &p);
+  friend ostream & operator<<(ostream &,const Punto &);
   Punto(){}
   Punto(float x,float y){this->x=x;this->y=y;}
   float x;
@@ -41,13 +41,35 @@ istream & operator>>(istream &i,Punto &p)
   return i;
 }
 
-
 float distancia(Punto p1,Punto p2)
 {
   float n1=pow((p1.x-p2.x),2);
   float n2=pow((p1.y-p2.y),2);
   return sqrt(n1+n2);
 }
+
+float caso_particular(Punto ps[],int len ,float dmin)
+{
+  int n=ceil(dmin);
+  cout<<"ceil es..... "<<n<<endl;
+  int medio=len/2;
+  cout<<"el mendio es... "<<medio<<endl;
+
+  cout<<"form.."<<(2*n)-1<<endl;
+  for(int i=0;i<((2*n)-1);i++){
+    cout<<"interando.....";
+    for(int j=i+1;j<(2*n)-1;j++){
+      float d=distancia(ps[medio-n+i],ps[medio-n+j]);   ///   hallamos la distancia del primer punto
+      cout<<"distancia hallada entre "<<ps[medio-n+i]<<" y"<<ps[medio-n+j]<<"ees..."<<d<<endl;
+      if( d < dmin){
+        cout<<"reemplazando distancia minima"<<endl;                                      //   con el punto siguiente
+        dmin=d;
+      }
+    }
+  }
+}
+
+
 
 float partir_arreglo(Punto nuevo[],int len1,Punto  remoto[],int i)
 {
@@ -58,7 +80,10 @@ float partir_arreglo(Punto nuevo[],int len1,Punto  remoto[],int i)
 
 void par_mas_cercano(Punto as[],int len,float &dmin)
 {
+  cout<<"INICIANDO LA FUNCION PARMASCERCANO"<<endl;
+  float auxiliarlen=len;
   cout<<"\t\t!!distancia minima = "<<dmin<<endl;
+  cout<<" \t\t!!len del arreglo = "<<len<<endl;
 
   cout<<"evaluamos tamaño == 2\n";
   if(len==2){
@@ -80,21 +105,25 @@ void par_mas_cercano(Punto as[],int len,float &dmin)
     cout<<"ejecutamos funcion distancia ...: "<<d2<<" de los puntos as[0],as[2] respectivamente..: "<<as[0]<<","<<as[2]<<endl;
     float d3=distancia(as[1],as[2]);
     cout<<"ejecutamos funcion distancia ...: "<<d3<<" de los puntos as[1],as[2] respectivamente..: "<<as[1]<<","<<as[2]<<endl;
-    if(d1<=d2 && d1<=d3) dmin=d1;
-    if(d2<=d1 && d2<=d3) dmin=d2;
-    if(d3<=d1 && d3<=d2) dmin=d3;
+    if(d1<=d2 && d1<=d3 && d1<dmin) dmin=d1;
+    if(d2<=d1 && d2<=d3 && d2<dmin) dmin=d2;
+    if(d3<=d1 && d3<=d2 && d3<dmin) dmin=d3;
     cout<<"\t\t!!distancia minima = "<<dmin<<endl;
     return ;
   }
-  Punto izquierdo[int(ceil(len/2))];             /////////   creamos un arreglo izquierdo
+  cout<<"el ceil es............"<<ceil(auxiliarlen/2)<<endl;
+  int lenizquierdo=int(ceil(auxiliarlen/2));
+  Punto izquierdo[lenizquierdo];             /////////   creamos un arreglo izquierdo
   cout<<"creo arreglo hijo izquierod\n";
-  partir_arreglo(izquierdo,int(ceil(len/2)),as,0);
+  cout<<"el lenizquierdo es....... "<<lenizquierdo<<endl;
+  partir_arreglo(izquierdo,lenizquierdo,as,0);
   Punto derecho[len/2];                         /////////   creamos un arreglo derecho
   cout<<"creo arreglo hijo derecho\n";
+  cout<<"el lenderecho es....... "<<len/2<<endl;
   partir_arreglo(derecho,len/2,as,len-(len/2));
 
   cout<<"recursividad en izquierdo\n";
-  par_mas_cercano(izquierdo,int(ceil(len/2)),dmin);
+  par_mas_cercano(izquierdo,lenizquierdo,dmin);
   cout<<"recursividad en derecho\n";
   par_mas_cercano(derecho,len/2,dmin);
 
@@ -118,9 +147,9 @@ int main ()
   float dist=distancia(ps[0],ps[10]);
   cout<<"distancia inicial es ....... "<<dist<<endl;
 
-  par_mas_cercano(ps,11,dist);
-  cout<<"la distancia minima final es..........."<<dist<<endl;
-
+  //par_mas_cercano(ps,11,dist);
+  //cout<<"la distancia minima final es..........."<<dist<<endl;
+  caso_particular(ps,11,2.4);
 
   return 0;
 }
